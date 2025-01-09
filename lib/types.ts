@@ -1,3 +1,4 @@
+import type { Delta } from 'quill';
 export interface Dataset {
   id: string;
   name: string;
@@ -22,3 +23,15 @@ export interface Dataset {
 export interface FileWithPreview extends File {
   preview?: string;
 }
+
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  paperSize: 'letter' | 'a4' | 'legal';
+  content?: Delta;
+  createdAt: Date;
+  updatedAt: Date;
+  lastUsed?: Date;
+  documentsGenerated?: number;
+} 

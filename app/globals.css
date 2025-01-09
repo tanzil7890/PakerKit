@@ -100,3 +100,72 @@ body {
     }
   }
 }
+
+/* Quill Editor Styles */
+.ql-editor {
+  min-height: 500px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-toolbar.ql-snow {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-color: #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.ql-container.ql-snow {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-color: #e5e7eb;
+}
+
+/* Variable Badge Styles */
+.variable-badge {
+  transition: all 0.2s ease;
+}
+
+.variable-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.variable-badge:active {
+  transform: translateY(0);
+}
+
+/* CSV Upload Styles */
+.csv-upload {
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.csv-upload:hover {
+  border-color: #2563eb;
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* Drag and Drop Styles */
+.editor-drop-zone {
+  position: relative;
+}
+
+.editor-drop-zone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed #2563eb;
+  border-radius: 8px;
+  background-color: rgba(37, 99, 235, 0.05);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.editor-drop-zone.dragging::after {
+  opacity: 1;
+}

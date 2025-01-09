@@ -30,7 +30,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-10">
+    <nav className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-12">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
           <Link href="/" className="mr-8 flex items-center space-x-2 transition-colors hover:text-primary">
