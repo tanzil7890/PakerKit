@@ -14,6 +14,7 @@ import { $setBlocksType } from '@lexical/selection';
 import { $createListNode, $isListNode } from '@lexical/list';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import html2pdf from 'html2pdf.js';
+import SaveButton from './SaveButton';
 
 interface ActiveFormats {
   blockType: string;
@@ -23,7 +24,19 @@ interface ActiveFormats {
   [key: string]: boolean | string;
 }
 
-const LexicalEditorToolbar = () => {
+interface LexicalEditorToolbarProps {
+  isSaving: boolean;
+  isNewTemplate: boolean;
+  hasUnsavedChanges: boolean;
+  onSave: () => void;
+}
+
+const LexicalEditorToolbar = ({
+  isSaving,
+  isNewTemplate,
+  hasUnsavedChanges,
+  onSave
+}: LexicalEditorToolbarProps) => {
   const [editor] = useLexicalComposerContext();
   const [activeFormats, setActiveFormats] = useState<ActiveFormats>({
     blockType: 'paragraph',
@@ -233,12 +246,20 @@ const LexicalEditorToolbar = () => {
           </button>
         ))}
       </div>
-      <button
-        onClick={exportToPDF}
-        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        Export PDF
-      </button>
+      <div className="flex items-center space-x-2">
+        <SaveButton
+          isSaving={isSaving}
+          isNewTemplate={isNewTemplate}
+          hasUnsavedChanges={hasUnsavedChanges}
+          onSave={onSave}
+        />
+        <button
+          onClick={exportToPDF}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Export PDF
+        </button>
+      </div>
     </div>
   );
 };
