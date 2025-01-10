@@ -23,6 +23,7 @@ const routes = [
     icon: FileText,
     href: "/template",
   },
+  
 ];
 
 export function Navbar() {

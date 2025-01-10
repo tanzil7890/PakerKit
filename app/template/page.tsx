@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import CreateTemplateDialog from "./CreateTemplateDialog";
+import type { Variable, Template } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings, FileText, Clock, BarChart, X } from "lucide-react";
@@ -23,10 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import type { Template } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
-import { Delta } from "quill";
 
 export default function Template() {
   const router = useRouter();
@@ -71,11 +71,38 @@ export default function Template() {
       name: newTemplate.name,
       description: newTemplate.description,
       paperSize: newTemplate.paperSize as Template['paperSize'],
-      content: {
-        ops: [
-          { insert: '\n' }
-        ]
-      } as Delta,
+      size: 'A4',
+      lastUpdated: new Date().toISOString(),
+      content: JSON.stringify({
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "",
+                  type: "text",
+                  version: 1
+                }
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1
+            }
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1
+        }
+      }),
+      variables: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       documentsGenerated: 0
