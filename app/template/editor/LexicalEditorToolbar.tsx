@@ -12,9 +12,8 @@ import {
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text';
 import { $setBlocksType } from '@lexical/selection';
 import { $createListNode, $isListNode } from '@lexical/list';
-import { $generateHtmlFromNodes } from '@lexical/html';
-import html2pdf from 'html2pdf.js';
 import SaveButton from './SaveButton';
+import ExportPDF from './ExportPDF';
 
 interface ActiveFormats {
   blockType: string;
@@ -109,103 +108,6 @@ const LexicalEditorToolbar = ({
     });
   }, [editor]);
 
-  const exportToPDF = useCallback(() => {
-    editor.getEditorState().read(() => {
-      const htmlString = $generateHtmlFromNodes(editor);
-      
-      const tempDiv = document.createElement('div');
-      tempDiv.className = 'pdf-export-container';
-      tempDiv.innerHTML = `
-        <style>
-          .pdf-export-container {
-            padding: 40px;
-            font-family: Arial, sans-serif;
-            color: #000;
-            width: 8.5in;
-            margin: 0 auto;
-            box-sizing: border-box;
-          }
-          h1 { 
-            font-size: 24px; 
-            font-weight: bold; 
-            margin-bottom: 16px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-          }
-          h2 { 
-            font-size: 20px; 
-            font-weight: bold; 
-            margin-bottom: 14px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-          }
-          h3 { 
-            font-size: 16px; 
-            font-weight: bold; 
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-          }
-          p { 
-            font-size: 12px; 
-            line-height: 1.5; 
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-          }
-          ul { 
-            list-style-type: disc !important;
-            padding-left: 24px !important;
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-          }
-          ul li {
-            font-size: 12px;
-            line-height: 1.5;
-            margin-bottom: 6px;
-            page-break-inside: avoid;
-            display: list-item !important;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-          }
-        </style>
-        ${htmlString}
-      `;
-      document.body.appendChild(tempDiv);
-
-      const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5],
-        filename: 'document.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          width: 816, // 8.5 inches * 96 DPI
-          windowWidth: 816
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'portrait',
-          hotfixes: ['px_scaling']
-        },
-        pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'],
-          before: '.page-break',
-          avoid: ['li', 'p', 'h1', 'h2', 'h3']
-        }
-      };
-
-      html2pdf().set(opt).from(tempDiv).save().then(() => {
-        document.body.removeChild(tempDiv);
-      });
-    });
-  }, [editor]);
-
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
@@ -253,12 +155,7 @@ const LexicalEditorToolbar = ({
           hasUnsavedChanges={hasUnsavedChanges}
           onSave={onSave}
         />
-        <button
-          onClick={exportToPDF}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          Export PDF
-        </button>
+        <ExportPDF />
       </div>
     </div>
   );

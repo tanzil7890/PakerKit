@@ -16,6 +16,8 @@ export default function TemplateEditorPage() {
   const isNewTemplate = useRef(true);
   const lastSavedContent = useRef<string>('');
   const currentContent = useRef<string>('');
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [previewData, setPreviewData] = useState<Record<string, string>>({});
 
   const saveTemplate = useCallback(async (content: string) => {
     if (!template) return;
@@ -82,6 +84,10 @@ export default function TemplateEditorPage() {
     }
   };
 
+  const handlePreviewToggle = useCallback(() => {
+    setIsPreviewMode(prev => !prev);
+  }, []);
+
   useEffect(() => {
     const savedTemplates = localStorage.getItem('templates');
     if (savedTemplates) {
@@ -108,6 +114,8 @@ export default function TemplateEditorPage() {
         isNewTemplate={isNewTemplate.current}
         hasUnsavedChanges={hasUnsavedChanges}
         onSave={handleManualSave}
+        onPreviewToggle={handlePreviewToggle}
+        isPreviewMode={isPreviewMode}
       />
     </div>
   );

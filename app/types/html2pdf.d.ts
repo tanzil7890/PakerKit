@@ -30,6 +30,7 @@ declare module 'html2pdf.js' {
     set: (options: Html2PdfOptions) => Html2Pdf;
     from: (element: HTMLElement) => Html2Pdf;
     save: () => Promise<void>;
+    output: (type: string) => Promise<Blob>;
   }
 
   function html2pdf(): Html2Pdf;

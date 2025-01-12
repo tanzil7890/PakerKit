@@ -1,18 +1,22 @@
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { HeadingNode } from '@lexical/rich-text';
 import { ListNode, ListItemNode } from '@lexical/list';
-import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { EditorState, LexicalEditor } from 'lexical';
 import theme from './editor/theme';
 import LexicalEditorToolbar from './editor/LexicalEditorToolbar';
-import { useEffect, useState } from 'react';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { useState } from 'react';
+import VariableSidebar from './editor/VariableSidebar';
+import VariableInsertionPlugin from './editor/VariableInsertionPlugin';
+import EditorContent from './editor/EditorContent';
+import PreviewPlugin from './editor/PreviewPlugin';
+import PDFGenerator from './editor/PDFGenerator';
+
+interface Variable {
+  name: string;
+  type: 'custom' | 'csv';
+}
 
 interface EditorProps {
   onEditorChange: (content: string) => void;
@@ -21,6 +25,8 @@ interface EditorProps {
   isNewTemplate: boolean;
   hasUnsavedChanges: boolean;
   onSave: () => void;
+  onPreviewToggle: () => void;
+  isPreviewMode: boolean;
 }
 
 const Editor = ({ 
@@ -29,9 +35,15 @@ const Editor = ({
   isSaving,
   isNewTemplate,
   hasUnsavedChanges,
-  onSave 
+  onSave,
+  onPreviewToggle,
+  isPreviewMode
 }: EditorProps) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [variableToInsert, setVariableToInsert] = useState<string | null>(null);
+  const [previewData, setPreviewData] = useState<Record<string, string>>({});
+  const [csvData, setCsvData] = useState<Array<Record<string, string>>>([]);
+  const [variables, setVariables] = useState<Variable[]>([]);
 
   const initialConfig = {
     namespace: 'TemplateEditor',
@@ -43,84 +55,51 @@ const Editor = ({
     editable: true,
   };
 
-  const handleEditorChange = (editorState: EditorState) => {
-    editorState.read(() => {
-      const jsonString = JSON.stringify(editorState.toJSON());
-      if (jsonString !== content) {
-        onEditorChange(jsonString);
-      }
-    });
-  };
-
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="bg-white rounded-lg shadow">
-        <LexicalEditorToolbar 
-          isSaving={isSaving}
-          isNewTemplate={isNewTemplate}
-          hasUnsavedChanges={hasUnsavedChanges}
-          onSave={onSave}
-        />
-        <div className="border-t border-gray-200 relative">
-          {isLoading && (
-            <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-          )}
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable 
-                className="min-h-[600px] max-h-[800px] overflow-y-auto px-6 py-4 focus:outline-none editor-content" 
-                style={{
-                  width: '8.5in',
-                  margin: '0 auto',
-                  wordWrap: 'break-word',
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'break-word'
-                }}
-              />
-            }
-            placeholder={isLoading ? null : <div className="text-gray-400">Start typing...</div>}
-            ErrorBoundary={LexicalErrorBoundary}
+      <div className="flex">
+        <div className="flex-1 bg-white rounded-lg shadow">
+          <div className="flex justify-between items-center p-2">
+            <LexicalEditorToolbar 
+              isSaving={isSaving}
+              isNewTemplate={isNewTemplate}
+              hasUnsavedChanges={hasUnsavedChanges}
+              onSave={onSave}
+            />
+            <PDFGenerator 
+              variables={variables}
+              csvData={csvData}
+            />
+          </div>
+          <EditorContent 
+            isLoading={isLoading}
+            content={content}
+            onEditorChange={onEditorChange}
+            onLoadComplete={() => setIsLoading(false)}
+          />
+          <VariableInsertionPlugin variableToInsert={variableToInsert} />
+          <HistoryPlugin />
+          <ListPlugin />
+          <AutoFocusPlugin />
+          <PreviewPlugin 
+            isPreviewMode={isPreviewMode}
+            previewData={previewData}
           />
         </div>
-        <HistoryPlugin />
-        <ListPlugin />
-        <AutoFocusPlugin />
-        <OnChangePlugin onChange={handleEditorChange} />
-        <InitialContentPlugin 
-          content={content} 
-          onLoadComplete={() => setIsLoading(false)} 
+        <VariableSidebar 
+          onInsertVariable={(variable) => {
+            setVariableToInsert(variable);
+            setTimeout(() => setVariableToInsert(null), 100);
+          }}
+          onPreviewToggle={onPreviewToggle}
+          isPreviewMode={isPreviewMode}
+          onPreviewDataChange={setPreviewData}
+          onCsvDataChange={setCsvData}
+          onVariablesChange={setVariables}
         />
       </div>
     </LexicalComposer>
   );
 };
-
-function InitialContentPlugin({ 
-  content, 
-  onLoadComplete 
-}: { 
-  content: string; 
-  onLoadComplete: () => void;
-}) {
-  const [editor] = useLexicalComposerContext();
-  
-  useEffect(() => {
-    editor.update(() => {
-      try {
-        const parsedContent = JSON.parse(content);
-        const editorState = editor.parseEditorState(parsedContent);
-        editor.setEditorState(editorState);
-      } catch (error) {
-        console.error('Error setting initial content:', error);
-      } finally {
-        onLoadComplete();
-      }
-    });
-  }, [editor, content, onLoadComplete]);
-
-  return null;
-}
 
 export default Editor; 
