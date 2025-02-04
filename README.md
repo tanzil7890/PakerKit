@@ -58,6 +58,9 @@ cd <project-directory>
 ```
 3. Run `npm install` to install dependencies
 ```
+```
+npx puppeteer browsers install chrome
+```
 npm install
 ```
 4. Run `npm run dev` to start the development server
@@ -91,4 +94,7 @@ Industry,Company,Location
 Accounting/Finance,ACME Corp,New York
 Advertising/Public Relations,Media Co,London
 ```
+
+
+- 
 

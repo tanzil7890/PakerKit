@@ -8,15 +8,15 @@ const theme = {
       h3: 'text-lg font-bold mb-2',
     },
     list: {
-      ul: 'list-disc pl-6 mb-4 marker:text-gray-700',
-      ol: 'list-decimal pl-6 mb-4',
-      listitem: 'mb-1 leading-normal',
+      ul: 'list-disc pl-6 mb-4 marker:text-gray-700 ml-4',
+      ol: 'list-decimal pl-6 mb-4 ml-4',
+      listitem: 'mb-1 leading-normal pl-2',
       listitemChecked: '',
       listitemUnchecked: '',
       nested: {
-        listitem: 'mb-1 leading-normal',
+        listitem: 'mb-1 leading-normal pl-4',
       },
-      nestedListitem: 'mb-1 leading-normal',
+      nestedListitem: 'mb-1 leading-normal pl-4',
     },
     text: {
       bold: 'font-bold',

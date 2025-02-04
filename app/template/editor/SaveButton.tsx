@@ -6,9 +6,18 @@ interface SaveButtonProps {
   isNewTemplate: boolean;
   hasUnsavedChanges: boolean;
   onSave: () => void;
+  icon?: React.ReactNode;
+  className?: string;
 }
 
-const SaveButton = ({ isSaving, isNewTemplate, hasUnsavedChanges, onSave }: SaveButtonProps) => {
+const SaveButton = ({ 
+  isSaving, 
+  isNewTemplate, 
+  hasUnsavedChanges, 
+  onSave,
+  icon,
+  className 
+}: SaveButtonProps) => {
   const getButtonText = () => {
     if (isSaving) return "Saving...";
     if (isNewTemplate) return "Save";
@@ -20,7 +29,7 @@ const SaveButton = ({ isSaving, isNewTemplate, hasUnsavedChanges, onSave }: Save
     <Button
       onClick={onSave}
       disabled={isSaving || (!hasUnsavedChanges && !isNewTemplate)}
-      className="min-w-[120px] transition-all"
+      className={`min-w-[120px] transition-all ${className || ''}`}
       variant={hasUnsavedChanges ? "default" : "outline"}
     >
       <Save className={`mr-2 h-4 w-4 ${isSaving ? 'animate-spin' : ''}`} />
